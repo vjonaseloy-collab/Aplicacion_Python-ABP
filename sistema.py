@@ -14,3 +14,10 @@ class conexion:
         self.cursor = None
 
 #hola mi amor
+
+""
+"""
+La concha de tu madre flaco, aprender a hacer las cosas
+mentira te quiero, borre el import de arriba porque salia en amarillo
+no se que era pero supongo que no pasa nada
+toma, te mando un troyano"""
