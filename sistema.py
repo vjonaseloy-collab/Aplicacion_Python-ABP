@@ -1,4 +1,5 @@
 import mysql.connector
+from tabulate import tabulate
 
 
 #comentario x jijoooo
@@ -20,4 +21,8 @@ class conexion:
 La concha de tu madre flaco, aprender a hacer las cosas
 mentira te quiero, borre el import de arriba porque salia en amarillo
 no se que era pero supongo que no pasa nada
-toma, te mando un troyano"""
+toma, te mando un troyano
+
+
+Pero que wachin, me borra las librerias... :c
+"""
