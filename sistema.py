@@ -12,3 +12,5 @@ class conexion:
         self.base_datos = "ABP_bytefix"
         self.conexion = None
         self.cursor = None
+
+#hola mi amor
