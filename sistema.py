@@ -1,6 +1,6 @@
 import mysql.connector
 from tabulate import tabulate
 
-#comentario x jijo
+#comentario x jijoooo
 
 class conexion:
