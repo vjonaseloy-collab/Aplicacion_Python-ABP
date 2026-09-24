@@ -166,16 +166,16 @@ def reporte_vista(db):
 
 ###     Menu principal     ###
 
-def verificar(mensaje): # y esta funcion de virgo momo ? tkm papu
+# def verificar(mensaje): # y esta funcion de virgo momo ? tkm papu
     
-    while True:
-        numero = input(mensaje)
-        if numero.isdigit():
-            numero = int(numero)
-            return numero
+#     while True:
+#         numero = input(mensaje)
+#         if numero.isdigit():
+#             numero = int(numero)
+#             return numero
 
-        else:
-            print("El, dato ingresado no es valido, intente de nuevo.\n")
+#         else:
+#             print("El, dato ingresado no es valido, intente de nuevo.\n")
 
 def main():
     db = Conexion()
@@ -192,7 +192,7 @@ def main():
         print("6. Reporte: Reparaciones pendientes (vista)")
         print("0. Salir")
         print("=" * 50)
-        op = verificar("Opción: ") #y ese verificar de virgo momo ? tkm papu
+        op = input("Opción: ") #y ese verificar de virgo momo ? tkm papu
         if op == "1":
             gestionar(
                 Producto(db),
