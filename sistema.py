@@ -1,6 +1,6 @@
 import mysql.connector
 import os
-#from tabulate import tabulate
+from tabulate import tabulate
 
 #CONEXION A SQL
 
@@ -71,14 +71,10 @@ class Entidad:
 # ////////       CLASES PARA LAS TABLAS SQL     ////////   
 
 class Producto(Entidad):
-
-    def __init__(self,id_producto,nombre,categoria,precio,stock):
-        self.id_producto = id_producto
-        self.nombre = nombre
-        self.categoria = categoria
-        self.precio = precio
-        self.stock = stock
-
+    def __init__(self, db):
+        super().__init__(db, "productos", "id_producto",
+                         ["nombre", "categoria", "precio", "stock"])
+        
     #metodo para getear
 
     def get_producto(self):
