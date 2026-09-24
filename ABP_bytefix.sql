@@ -58,6 +58,23 @@ CREATE TABLE transacciones (
 );
 
 -- datos de prueba
+
+-- Vista SQL
+CREATE OR REPLACE VIEW vista_reparaciones_pendientes AS
+SELECT 
+    r.id_reparacion,
+    c.nombre AS cliente,
+    c.apellido AS apellido_cliente,
+    e.nombre AS tecnico,
+    e.apellido AS apellido_tecnico,
+    r.tipo_trabajo,
+    r.precio,
+    r.estado
+FROM reparaciones r
+JOIN clientes c ON r.id_cliente = c.id_cliente
+JOIN empleados e ON r.id_empleado = e.id_empleado
+WHERE r.estado = 'pendiente';
+
 -- EMPLEADOS 
 INSERT INTO empleados (nombre, apellido, especialidad, telefono, email) VALUES
 ('Carlos', 'Gómez', 'Hardware', '11111111', 'carlos@bytefix.com'),
