@@ -143,7 +143,22 @@ def mostrar(filas, headers):
 # Funcion generica que gestiona las entidades: basicamente lee la opcion que elige el usuario y ejecuta la operacion que corresponda, tmb se ejecuta hasta que el ciclo se corta.
 
 def gestionar(entidad, headers, busquedas ): #parametros q luego usare jijo
-    pass
+    while True:
+        limpiar()
+        print(f"\n--- {entidad.tabla.upper()} ---")
+        print("1. Alta")
+        print("2. Baja")
+        print("3. Modificar")
+        print("4. Listar")
+        print("5. Buscar por ID")
+        for op, etiqueta, _, _ in busquedas:
+            print(f"{op}. Buscar por {etiqueta}")
+        print("0. Volver")
+        op = input("Opción: ")
+
+        if op == "1":
+            valores = [input(f"{c}: ") for c in entidad.campos]
+            entidad.guardar(valores)
 # Menu principal
 
 def Main():
