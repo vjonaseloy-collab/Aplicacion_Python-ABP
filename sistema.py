@@ -1,13 +1,13 @@
 import mysql.connector
 import os
-from tabulate import tabulate
+#from tabulate import tabulate
 
 #CONEXION A SQL
 
 class Conexion:
     def __init__(self):
         self.conexion = mysql.connector.connect(
-            host="localhost", user="root", password="root124", database="ABP_bytefix"
+            host="localhost", user="root", password="root", database="ABP_bytefix"
         )
         self.cursor = self.conexion.cursor()
 
@@ -95,8 +95,9 @@ def pausar(): # esto solo muestra un mensaje y al pulsar cualquier tecla o enter
     input("\n Presiona cualquier tecla para continuar...") # en resumen solo le da tiempo al usuario para leer lo que se mostro antes de que el programa siga, sino se borra la pantalla xd.
 
 def mostrar(filas, headers):
-    print(tabulate(filas, headers=headers, tablefmt="rounded_grid") if filas else "Sin registros.")
-    pausar()
+    #print(tabulate(filas, headers=headers, tablefmt="rounded_grid") if filas else "Sin registros.")
+    #pausar()
+    pass
 
 # Funcion generica que gestiona las entidades: basicamente lee la opcion que elige el usuario y ejecuta la operacion que corresponda, tmb se ejecuta hasta que el ciclo se corta.
 
