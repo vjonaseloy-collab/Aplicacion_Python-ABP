@@ -23,9 +23,54 @@ class Conexion:
         self.cursor.close()
         self.conexion.close()
 
+
+# ////////       CLASE ENTIDAD PADRE PARA LAS DEMAS CLASES (hijos)     ////////   
+
+class Entidad:
+
+    def __init__(self, db, tabla, id_col, campos):
+        self.db = db
+        self.tabla = tabla
+        self.id_col = id_col
+        self.campos = campos
+
+    def guardar(self, valores):
+        ph = ", ".join(["%s"] * len(self.campos))
+        self.db.ejecutar(
+            f"INSERT INTO {self.tabla} ({', '.join(self.campos)}) VALUES ({ph})",
+            valores
+        )
+
+    def eliminar(self, id_val):
+        self.db.ejecutar(f"DELETE FROM {self.tabla} WHERE {self.id_col} = %s", (id_val,))
+
+    def actualizar(self, id_val, valores):
+        sets = ", ".join([f"{c}=%s" for c in self.campos])
+        self.db.ejecutar(
+            f"UPDATE {self.tabla} SET {sets} WHERE {self.id_col} = %s",
+            valores + [id_val]
+        )
+
+    def listar(self):
+        return self.db.consultar(f"SELECT * FROM {self.tabla}")
+
+    def buscar_id(self, id_val):
+        return self.db.consultar(
+            f"SELECT * FROM {self.tabla} WHERE {self.id_col} = %s", (id_val,)
+        )
+
+    def buscar(self, columna, valor, criterio="exacto"):
+        if criterio == "like":
+            return self.db.consultar(
+                f"SELECT * FROM {self.tabla} WHERE {columna} LIKE %s", (f"%{valor}%",)
+            )
+        return self.db.consultar(
+            f"SELECT * FROM {self.tabla} WHERE {columna} = %s", (valor,)
+        )
+
 # ////////       CLASES PARA LAS TABLAS SQL     ////////   
 
-class Producto:
+class Producto(Entidad):
 
     def __init__(self,id_producto,nombre,categoria,precio,stock):
         self.id_producto = id_producto
@@ -45,7 +90,7 @@ class Producto:
     def set_producto(self):
         pass
 
-class Clientes:
+class Clientes(Entidad):
 
     def __init__(self,id_cliente,nombre,apellido,telefono,email,direccion):
         self.id_cliente = id_cliente
@@ -55,7 +100,7 @@ class Clientes:
         self.email = email
         self.direccion = direccion
 
-class Empleados:
+class Empleados(Entidad):
 
     def __init__(self,id_empleado,nombre,apellido,telefono,email,especialidad):
         self.id_empleado = id_empleado
@@ -66,7 +111,7 @@ class Empleados:
         self.email = email
 
 
-class Reparacion:
+class Reparacion(Entidad):
 
     def __init__(self,id_reparacion,id_cliente,id_empleado,tipo_trabajo,estado,precio):
         self.id_reparacion = id_reparacion
@@ -76,7 +121,7 @@ class Reparacion:
         self.estado = estado
         self.precio = precio
 
-class Transacciones:
+class Transacciones(Entidad):
 
     def __init__(self,id_transaccion,id_empleado,id_cliente,id_producto,id_reparacion,total):
         self.id_transaccion = id_transaccion
@@ -127,4 +172,10 @@ def Main():
             
 """
 Estan mergeados los dos ahora we
+
+perfectamente equilibrado 
 """
+if __name__ == "__main__":
+    main() 
+#tengo q terminar el menu todavia xd
+#para eso me falta terminar la clase padre y las demas clases para reutilizar metodos jijo
