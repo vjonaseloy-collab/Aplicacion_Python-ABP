@@ -5,14 +5,24 @@ from tabulate import tabulate
 #comentario x jijoooo
 
 class conexion:
-        
     def __init__(self):
-        self.host = "localhost"
-        self.usuario = "root"
-        self.password = "root124"  # pone tu contraseña acá
-        self.base_datos = "ABP_bytefix"
-        self.conexion = None
-        self.cursor = None
+        self.conexion = mysql.connector.connect(
+            host="localhost", user="root", password="root124", database="ABP_bytefix"
+        )
+        self.cursor = self.conexion.cursor()
+
+    def ejecutar(self, q, p=None):
+        self.cursor.execute(q, p or ())
+        self.conexion.commit()
+
+    def consultar(self, q, p=None):
+        self.cursor.execute(q, p or ())
+        return self.cursor.fetchall()
+
+    def cerrar(self):
+        self.cursor.close()
+        self.conexion.close()
+
 
 #hola mi amor
 
