@@ -159,6 +159,30 @@ def gestionar(entidad, headers, busquedas ): #parametros q luego usare jijo
         if op == "1":
             valores = [input(f"{c}: ") for c in entidad.campos]
             entidad.guardar(valores)
+            
+        elif op == "2":
+            entidad.eliminar(input("ID: "))
+
+        elif op == "3":
+            id_val = input("ID a modificar: ")
+            valores = [input(f"Nuevo {c}: ") for c in entidad.campos]
+            entidad.actualizar(id_val, valores)
+
+        elif op == "4":
+            mostrar(entidad.listar(), headers)
+
+        elif op == "5":
+            mostrar(entidad.buscar_id(input("ID: ")), headers)
+
+        elif any(op == b[0] for b in busquedas):
+            for b in busquedas:
+                if op == b[0]:
+                    _, etiqueta, columna, criterio = b
+                    valor = input(f"{etiqueta}: ")
+                    mostrar(entidad.buscar(columna, valor, criterio), headers)
+
+        elif op == "0":
+            break
 # Menu principal
 
 def Main():
