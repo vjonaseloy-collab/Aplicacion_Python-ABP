@@ -54,15 +54,15 @@ class Entidad:
     def listar(self):
         return self.db.consultar(f"SELECT * FROM {self.tabla}")
 
-    def buscar_id(self, id_val):
+    def buscar_id(self, id_val):       #"Al menos 2 búsquedas con criterios diferentes." estos dos metodos de abajo cumplen con esa parte de la consigna jijo
         return self.db.consultar(
-            f"SELECT * FROM {self.tabla} WHERE {self.id_col} = %s", (id_val,)
+            f"SELECT * FROM {self.tabla} WHERE {self.id_col} = %s", (id_val,) #EXACT acá la busqueda es con criterio exacto pq pide un ID especifico.
         )
 
     def buscar(self, columna, valor, criterio="exacto"):
         if criterio == "like":
             return self.db.consultar(
-                f"SELECT * FROM {self.tabla} WHERE {columna} LIKE %s", (f"%{valor}%",)
+                f"SELECT * FROM {self.tabla} WHERE {columna} LIKE %s", (f"%{valor}%",) #LIKE es como... una busqueda parcial, no exacta, ya que busca valores con una parte de la informacion y te arroja todos los valores que coincidan.
             )
         return self.db.consultar(
             f"SELECT * FROM {self.tabla} WHERE {columna} = %s", (valor,)
@@ -75,57 +75,29 @@ class Producto(Entidad):
         super().__init__(db, "productos", "id_producto",
                          ["nombre", "categoria", "precio", "stock"])
         
-    #metodo para getear
+class Cliente(Entidad):
+    def __init__(self, db):
+        super().__init__(db, "clientes", "id_cliente",
+                         ["nombre", "apellido", "telefono", "email", "direccion"])
 
-    def get_producto(self):
-        pass
-        #ver de traer el producto con SQL
 
-    #metodo para setear(modificar)
-
-    def set_producto(self):
-        pass
-
-class Clientes(Entidad):
-
-    def __init__(self,id_cliente,nombre,apellido,telefono,email,direccion):
-        self.id_cliente = id_cliente
-        self.nombre = nombre
-        self.apellido = apellido
-        self.telefono = telefono
-        self.email = email
-        self.direccion = direccion
-
-class Empleados(Entidad):
-
-    def __init__(self,id_empleado,nombre,apellido,telefono,email,especialidad):
-        self.id_empleado = id_empleado
-        self.nombre = nombre
-        self.apellido = apellido
-        self.especialidad = especialidad
-        self.telefono = telefono
-        self.email = email
+class Empleado(Entidad):
+    def __init__(self, db):
+        super().__init__(db, "empleados", "id_empleado",
+                         ["nombre", "apellido", "especialidad", "telefono", "email"])
 
 
 class Reparacion(Entidad):
+    def __init__(self, db):
+        super().__init__(db, "reparaciones", "id_reparacion",
+                         ["id_cliente", "id_empleado", "tipo_trabajo", "estado", "precio"])
 
-    def __init__(self,id_reparacion,id_cliente,id_empleado,tipo_trabajo,estado,precio):
-        self.id_reparacion = id_reparacion
-        self.id_cliente = id_cliente
-        self.id_empleado = id_empleado
-        self.tipo_trabajo = tipo_trabajo
-        self.estado = estado
-        self.precio = precio
 
-class Transacciones(Entidad):
+class Transaccion(Entidad):
+    def __init__(self, db):
+        super().__init__(db, "transacciones", "id_transaccion",
+                         ["id_empleado", "id_cliente", "id_producto", "id_reparacion", "total"])
 
-    def __init__(self,id_transaccion,id_empleado,id_cliente,id_producto,id_reparacion,total):
-        self.id_transaccion = id_transaccion
-        self.id_empleado = id_empleado
-        self.id_cliente = id_cliente
-        self.id_producto = id_producto
-        self.id_reparacion = id_reparacion
-        self.total = total
 
 # Funciones auxiliares (principalmente para el menu)
 
@@ -136,9 +108,8 @@ def pausar(): # esto solo muestra un mensaje y al pulsar cualquier tecla o enter
     input("\n Presiona cualquier tecla para continuar...") # en resumen solo le da tiempo al usuario para leer lo que se mostro antes de que el programa siga, sino se borra la pantalla xd.
 
 def mostrar(filas, headers):
-    #print(tabulate(filas, headers=headers, tablefmt="rounded_grid") if filas else "Sin registros.")
-    #pausar()
-    pass
+    print(tabulate(filas, headers=headers, tablefmt="rounded_grid") if filas else "Sin registros.")
+    pausar()
 
 # Funcion generica que gestiona las entidades: basicamente lee la opcion que elige el usuario y ejecuta la operacion que corresponda, tmb se ejecuta hasta que el ciclo se corta.
 
@@ -183,12 +154,33 @@ def gestionar(entidad, headers, busquedas ): #parametros q luego usare jijo
 
         elif op == "0":
             break
-# Menu principal
 
-def Main():
+
+###     Vista SQL en Python     ###
+
+def reporte_vista(db):
+    limpiar()
+    print("\n--- REPORTE: REPARACIONES PENDIENTES ---") # al final hice el ejemplo que di en el documento.
+    filas = db.consultar("SELECT * FROM vista_reparaciones_pendientes")
+    mostrar(filas, ["ID", "Cliente", "Apellido", "Técnico", "Apellido", "Trabajo", "Precio", "Estado"])
+
+###     Menu principal     ###
+
+# def verificar(mensaje): # y esta funcion de virgo momo ? tkm papu
+    
+#     while True:
+#         numero = input(mensaje)
+#         if numero.isdigit():
+#             numero = int(numero)
+#             return numero
+
+#         else:
+#             print("El, dato ingresado no es valido, intente de nuevo.\n")
+
+def main():
     db = Conexion()
     while True:
-        limpiar()
+
         print("=" * 50)
         print("   SISTEMA DE GESTIÓN    ")
         print("=" * 50)
@@ -200,16 +192,48 @@ def Main():
         print("6. Reporte: Reparaciones pendientes (vista)")
         print("0. Salir")
         print("=" * 50)
-        op = input("Opción: ")
-        
-        #if op == "1":
-            ###
-            
-"""
-Estan mergeados los dos ahora we
+        op = input("Opción: ") #y ese verificar de virgo momo ? tkm papu
+        if op == "1":
+            gestionar(
+                Producto(db),
+                ["ID", "Nombre", "Categoría", "Precio", "Stock"],
+                [("6", "nombre", "nombre", "like"),
+                 ("7", "categoría", "categoria", "exacto")]
+            )
+        elif op == "2":
+            gestionar(
+                Cliente(db),
+                ["ID", "Nombre", "Apellido", "Teléfono", "Email", "Dirección"],
+                [("6", "email", "email", "exacto")]
+            )
+        elif op == "3":
+            gestionar(
+                Empleado(db),
+                ["ID", "Nombre", "Apellido", "Especialidad", "Teléfono", "Email"],
+                []
+            )
+        elif op == "4":
+            gestionar(
+                Reparacion(db),
+                ["ID", "ID Cliente", "ID Empleado", "Tipo", "Estado", "Precio"],
+                [("6", "estado", "estado", "exacto")]
+            )
+        elif op == "5":
+            gestionar(
+                Transaccion(db),
+                ["ID", "ID Empleado", "ID Cliente", "ID Producto", "ID Reparación", "Total"],
+                []
+            )
+        elif op == "6":
+            reporte_vista(db)
+        elif op == "0":
+            db.cerrar()
+            print("Gracias por usar el sistema!")
+            break
+        else:
+            print("Opción inválida.")
+            pausar()
 
-perfectamente equilibrado 
-"""
 if __name__ == "__main__":
     main() 
 #tengo q terminar el menu todavia xd
