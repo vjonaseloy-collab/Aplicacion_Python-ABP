@@ -1,5 +1,5 @@
-CREATE DATABASE Local_HardwareDB;
-USE Local_HardwareDB;
+CREATE DATABASE ABP_bytefix;
+USE ABP_bytefix;
 
 -- EMPLEADOS
 CREATE TABLE empleados (
