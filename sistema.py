@@ -119,14 +119,13 @@ class Transaccion(Entidad):
                          ["id_empleado", "id_cliente", "id_producto", "id_reparacion", "total"])
 
 
-
 # Funciones auxiliares (principalmente para el menu)
 
-def limpiar():
-    os.system("cls" if os.name == "nt" else "clear")  # type: ignore
+def limpiar(): #simplemente limpia la pantalla al cambiar de menu.
+    os.system("cls" if os.name == "nt" else "clear")
 
 
-def pausar():
+def pausar(): #pausa para que el usuario tenga tiempo a ver que hizo antes de que se limpie la terminal
     input("\nPresione ENTER para continuar...")
 
 
@@ -138,7 +137,6 @@ def mostrar(filas, headers):
     else:
         print(tabulate(filas, headers=headers, tablefmt="grid"))
     pausar()
-
 
 
 # Valicdaciones por entidad para categoria, estado, email, etc. 
@@ -205,7 +203,35 @@ def pedir_campos(entidad):
                 print(f" El campo '{c}' no puede estar vacío.")
     return valores
 
+# Agregue esta funcion a ultimo momento porque originalmente era muy poco intuitivo dar de alta y modificar transacciones. Ahora deberia de mostrarse mejor ya que te hace elegir entre venta o reparacion.
+def pedir_transaccion():
+    """Pide los campos de una transacción de forma intuitiva."""
+    print("\n--- TIPO DE TRANSACCIÓN ---\n")
+    print("1. Venta (producto)")
+    print("2. Reparación")
+    tipo = input("Opción: ").strip()
 
+    valores = []
+
+    if tipo == "1":
+        print("\n--- ALTA DE VENTA ---")
+        valores.append(int(input("ID empleado: ")))
+        valores.append(int(input("ID cliente: ")))
+        valores.append(int(input("ID producto: ")))
+        valores.append(None)  # id_reparacion = NULL
+        valores.append(float(input("Total: ")))
+    elif tipo == "2":
+        print("\n--- ALTA DE REPARACIÓN ---")
+        valores.append(int(input("ID empleado: ")))
+        valores.append(int(input("ID cliente: ")))
+        valores.append(None)  # id_producto = NULL
+        valores.append(int(input("ID reparación: ")))
+        valores.append(float(input("Total: ")))
+    else:
+        print("Opción inválida.")
+        return None
+
+    return valores
 
 # Funcion generica que gestiona las entidades: basicamente lee la opcion que elige el usuario y ejecuta la operacion que corresponda, tmb se ejecuta hasta que el ciclo se corta.
 
@@ -226,7 +252,13 @@ def gestionar(entidad, headers, busquedas):
         if op == "1":
             limpiar()
             print(f"\n--- ALTA DE {entidad.tabla.upper()} ---")
-            valores = pedir_campos(entidad)
+            if entidad.tabla == "transacciones":
+                valores = pedir_transaccion()
+                if valores is None:
+                    pausar()
+                    continue
+            else:
+                valores = pedir_campos(entidad)
             entidad.guardar(valores)
 
         elif op == "2":
@@ -255,6 +287,10 @@ def gestionar(entidad, headers, busquedas):
                     _, etiqueta, columna, criterio = b
                     limpiar()
                     print(f"\n--- BUSCAR {entidad.tabla.upper()} POR {etiqueta.upper()} ---")
+                    
+                    if columna =="estado":
+                        print("Estados validos: pendiente, finalizada")
+                    
                     valor = input(f"{etiqueta}: ")
                     mostrar(entidad.buscar(columna, valor, criterio), headers)
 
@@ -264,16 +300,13 @@ def gestionar(entidad, headers, busquedas):
             print("Opción inválida.")
             pausar()
 
-
-
-###     Vista SQL en Python     ###
+# ////////       VISTA SQL A PYTHON    ////////  
 
 def reporte_vista(db):
     limpiar()
     print("\n--- REPORTE: REPARACIONES PENDIENTES ---")
     filas = db.consultar("SELECT * FROM vista_reparaciones_pendientes")
     mostrar(filas, ["ID", "Cliente", "Apellido", "Técnico", "Apellido", "Trabajo", "Precio", "Estado"])
-
 
 # validador de opcion (debe ser solo entero)
 
@@ -285,7 +318,7 @@ def pedir_opcion():
             return op
         print("Debe ingresar un número válido.")
 
-# MENÚ PRINCIPAL
+# ////////       MENU PRINCIPAL     ////////  
 
 def main():
     db = Conexion()
